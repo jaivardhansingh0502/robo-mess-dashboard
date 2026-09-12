@@ -1,0 +1,183 @@
+/* ROBOMESS - Cyber-Industrial Dark Theme & Design Tokens */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Color Palette */
+    --bg-deep: #05070A;
+    --bg-surface: #0A0E17;
+    --bg-card: #0F1626;
+    --bg-card-hover: #152138;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-bright: rgba(0, 240, 255, 0.35);
+    
+    /* Neon Accents */
+    --cyan: #00F0FF;
+    --cyan-glow: rgba(0, 240, 255, 0.4);
+    --green: #00FF88;
+    --green-glow: rgba(0, 255, 136, 0.35);
+    --orange: #FF9F0A;
+    --orange-glow: rgba(255, 159, 10, 0.35);
+    --red: #FF3344;
+    --red-glow: rgba(255, 51, 68, 0.4);
+    --purple: #D946EF;
+    --purple-glow: rgba(217, 70, 239, 0.35);
+    --blue: #3B82F6;
+
+    /* Typography */
+    --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Shadows & Glows */
+    --glow-cyan: 0 0 20px rgba(0, 240, 255, 0.25);
+    --glow-orange: 0 0 20px rgba(255, 159, 10, 0.25);
+    --glow-green: 0 0 20px rgba(0, 255, 136, 0.25);
+    --glow-red: 0 0 20px rgba(255, 51, 68, 0.3);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    background-color: var(--bg-deep);
+    color: #E2E8F0;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--bg-deep);
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.05) 0%, transparent 60%),
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+    min-height: 100vh;
+    color: #CBD5E1;
+}
+
+/* Custom Cyber Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+    background: #1E293B;
+    border-radius: 3px;
+    border: 1px solid var(--border-subtle);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan-glow);
+}
+
+/* Typography Classes */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: #F8FAFC;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+}
+
+.mono {
+    font-family: var(--font-mono);
+}
+
+.cyan { color: var(--cyan); }
+.green { color: var(--green); }
+.orange { color: var(--orange); }
+.red { color: var(--red); }
+.purple { color: var(--purple); }
+
+/* Cyber Bevel Container */
+.cyber-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    position: relative;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.cyber-card:hover {
+    border-color: rgba(0, 240, 255, 0.25);
+}
+
+.cyber-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid var(--cyan);
+    border-left: 2px solid var(--cyan);
+}
+
+.cyber-card::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 8px;
+    height: 8px;
+    border-bottom: 2px solid var(--cyan);
+    border-right: 2px solid var(--cyan);
+}
+
+/* Section Header Styles */
+.section-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+}
+
+.section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 14px;
+    background: rgba(0, 240, 255, 0.08);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--cyan);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.section-tag .tag-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--cyan);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(180deg, #FFFFFF 0%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #94A3B8;
+    max-width: 760px;
+    margin: 0 auto;
+    line-height: 1.6;
+}

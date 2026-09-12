@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROBOMESS // Edge-AI Distributed Fleet Coordination for Smart Warehouses</title>
+    <meta name="description" content="Edge-AI Based Distributed Fleet Coordination for Autonomous Mobile Robots (AMRs) in Smart Warehouses. SIH 2026 - Problem Statement SIH26123.">
+    
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/simulation.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <!-- Sticky Futuristic HUD Navigation -->
+    <header class="main-nav" id="main-nav">
+        <div class="nav-progress-bar" id="nav-progress-bar"></div>
+        
+        <a href="#section-hero" class="nav-brand">
+            <div class="brand-icon">RM</div>
+            <div class="brand-info">
+                <span class="brand-name">ROBOMESS</span>
+                <span class="brand-tag">EDGE-AI FLEET PLATFORM</span>
+            </div>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#section-problem">PROBLEM</a></li>
+            <li><a href="#section-solution">PARADIGM</a></li>
+            <li><a href="#section-architecture">ARCH</a></li>
+            <li><a href="#section-simulation">SIMULATION</a></li>
+            <li><a href="#section-cbba">CBBA</a></li>
+            <li><a href="#section-cbs">CBS+A*</a></li>
+            <li><a href="#section-orca">ORCA</a></li>
+            <li><a href="#section-edge-ai">EDGE AI</a></li>
+            <li><a href="#section-mesh">DISTRIBUTED</a></li>
+            <li><a href="#section-recovery">RECOVERY</a></li>
+            <li><a href="#section-stack">TECH STACK</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <div class="system-status-pill">
+                <span class="status-pulse-dot"></span>
+                <span class="status-text">LIVE FLEET</span>
+            </div>
+            <span class="nav-ping" id="nav-ping-val">18ms</span>
+            <button class="audio-toggle-btn" id="btn-audio-toggle" title="Toggle audio feedback synthesis">
+                <span class="audio-label">AUDIO: OFF</span>
+            </button>
+            <a href="#section-simulation" class="nav-cta-btn">SIMULATOR</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- ==================================================
+             SECTION 01: HERO
+        ================================================== -->
+        <section class="hero-section" id="section-hero">
+            <canvas id="hero-canvas"></canvas>
+            <div class="hero-content">
+                <div class="hero-meta-badges">
+                    <span class="sih-badge">SMART INDIA HACKATHON 2026</span>
+                    <span class="problem-code">PROBLEM ID: SIH26123</span>
+                </div>
+                
+                <h1 class="hero-title">ROBOMESS</h1>
+                
+                <p class="hero-subtitle">
+                    Edge-AI Based Distributed Fleet Coordination for Autonomous Mobile Robots (AMRs) in Smart Warehouses.
+                </p>
+
+                <div class="hero-cta-group">
+                    <a href="#section-simulation" class="hero-btn hero-btn-primary" id="hero-enter-sim">
+                        <span>ENTER SIMULATION</span>
+                        <span>➔</span>
+                    </a>
+                    <a href="#section-architecture" class="hero-btn hero-btn-secondary">
+                        <span>EXPLORE SYSTEM</span>
+                    </a>
+                </div>
+
+                <div class="hero-footer-status">
+                    <div class="hero-status-item">
+                        <span class="status-indicator-dot"></span>
+                        <span>SYSTEM ONLINE</span>
+                    </div>
+                    <div class="hero-status-item">
+                        <span class="cyan mono">FLEET STATUS: 5/5 OPERATIONAL</span>
+                    </div>
+                    <div class="hero-status-item">
+                        <span class="mono">MESH PROTOCOL: ROS 2 + MQTT</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 02: THE WAREHOUSE PROBLEM
+        ================================================== -->
+        <section class="section-wrapper" id="section-problem">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 02 // REAL-WORLD CHALLENGE</div>
+                <h2 class="section-title">THE WAREHOUSE CRISIS: CHAOS AT SCALE</h2>
+                <p class="section-subtitle">
+                    Modern high-density fulfillment centers demand hundreds of autonomous mobile robots operating simultaneously in narrow aisles. Traditional centralized dispatchers fail as fleet size scales.
+                </p>
+            </div>
+
+            <div class="problem-grid">
+                <!-- Interactive Problem Visualizer -->
+                <div class="problem-visual-box">
+                    <div class="section-micro-header">
+                        <span>NAIVE DISPATCH DEADLOCK SIMULATION</span>
+                        <span class="red mono">NO TIME-SPACE RESERVATION</span>
+                    </div>
+                    <canvas id="problem-demo-canvas" width="460" height="280" style="width:100%; height:auto; display:block; border-radius:4px;"></canvas>
+                    
+                    <div class="problem-demo-controls">
+                        <button class="cyber-btn danger-hover" id="btn-run-problem-demo">
+                            <span>▶ SIMULATE CROSSING CONFLICT</span>
+                        </button>
+                        <span class="mono" style="font-size:0.75rem; color:#64748B;">Path: R1(X) ⨯ R2(Y)</span>
+                    </div>
+
+                    <div class="problem-alert-banner" id="problem-conflict-alert">
+                        <span style="font-size: 1.1rem;">⚠</span>
+                        <span><strong>CRITICAL DEADLOCK DETECTED!</strong> R1 and R2 collided at intersection (5, 5). Lack of time-space reservation causes complete warehouse aisle paralysis.</span>
+                    </div>
+                </div>
+
+                <!-- Problem Breakdown Cards -->
+                <div class="problem-cards-list">
+                    <div class="problem-item-card">
+                        <h4 class="problem-item-title"><span class="red">01.</span> Aisle Congestion & Deadlocks</h4>
+                        <p class="problem-item-desc">
+                            When multiple AMRs navigate shared narrow corridors without space-time reservation, robots create head-on blocking deadlocks requiring manual human intervention.
+                        </p>
+                    </div>
+
+                    <div class="problem-item-card">
+                        <h4 class="problem-item-title"><span class="red">02.</span> Centralized Bottleneck & Single Point of Failure</h4>
+                        <p class="problem-item-desc">
+                            Central cloud planners introduce high round-trip latency (250ms+). If the central server or Wi-Fi drops, the entire warehouse fleet freezes in place.
+                        </p>
+                    </div>
+
+                    <div class="problem-item-card">
+                        <h4 class="problem-item-title"><span class="red">03.</span> Uncoordinated Task Bidding & Battery Starvation</h4>
+                        <p class="problem-item-desc">
+                            Static task assignment ignores dynamic robot state—assigning long-distance jobs to low-battery robots, leading to mid-aisle vehicle shutdowns.
+                        </p>
+                    </div>
+
+                    <div class="problem-item-card">
+                        <h4 class="problem-item-title"><span class="red">04.</span> Kinematic Incompatibilities in Real Time</h4>
+                        <p class="problem-item-desc">
+                            Grid paths assume robots are zero-dimensional points. Real physical AMRs possess mass, inertia, and non-holonomic turning radii that cause collisions during continuous motion.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 03: ROBOMESS SOLUTION
+        ================================================== -->
+        <section class="section-wrapper" id="section-solution">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 03 // THE ROBOMESS PARADIGM</div>
+                <h2 class="section-title">FROM CHAOS TO DISTRIBUTED INTELLIGENCE</h2>
+                <p class="section-subtitle">
+                    ROBOMESS solves warehouse coordination through a hierarchical, edge-distributed architecture: combining auction-based consensus, space-time multi-agent path planning, and continuous reciprocal velocity avoidance.
+                </p>
+            </div>
+
+            <div class="solution-flow">
+                <div class="flow-step-card">
+                    <div class="step-num">STAGE 01</div>
+                    <h3 class="step-title cyan">CBBA</h3>
+                    <p class="step-desc">
+                        <strong>Consensus-Based Bundle Algorithm:</strong> Distributed multi-agent auction. Robots bid based on Euclidean distance, battery health, and workload, reaching consensus in O(N) rounds.
+                    </p>
+                </div>
+
+                <div class="flow-arrow">➔</div>
+
+                <div class="flow-step-card">
+                    <div class="step-num">STAGE 02</div>
+                    <h3 class="step-title orange">CBS + A*</h3>
+                    <p class="step-desc">
+                        <strong>Conflict-Based Search:</strong> Space-time graph pathfinding. Resolves vertex collisions and edge swap conflicts through dynamic time-step constraints and coordinated wait actions.
+                    </p>
+                </div>
+
+                <div class="flow-arrow">➔</div>
+
+                <div class="flow-step-card">
+                    <div class="step-num">STAGE 03</div>
+                    <h3 class="step-title green">ORCA</h3>
+                    <p class="step-desc">
+                        <strong>Optimal Reciprocal Collision Avoidance:</strong> Continuous 2D kinematic evasion. Adjusts wheel velocities in real time to sidestep humans and dynamic obstacles with 50/50 reciprocal duty.
+                    </p>
+                </div>
+
+                <div class="flow-arrow">➔</div>
+
+                <div class="flow-step-card">
+                    <div class="step-num">STAGE 04</div>
+                    <h3 class="step-title purple">REPLAN</h3>
+                    <p class="step-desc">
+                        <strong>Dynamic Edge Recovery:</strong> If an AMR fails, runs low on power, or finds an aisle blocked, the peer fleet immediately reclaims tasks and recalculates detour routes.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 04: SYSTEM ARCHITECTURE
+        ================================================== -->
+        <section class="section-wrapper" id="section-architecture">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 04 // SYSTEM ARCHITECTURE</div>
+                <h2 class="section-title">INTEGRATED ROBOTICS ARCHITECTURE</h2>
+                <p class="section-subtitle">
+                    Bridging on-robot edge perception with decentralized peer-to-peer fleet coordination via ROS 2 Humble DDS and MQTT micro-brokers.
+                </p>
+            </div>
+
+            <div class="arch-diagram-grid">
+                <div class="arch-node-card">
+                    <div class="arch-node-badge">LAYER 01 // PERCEPTION</div>
+                    <h3 class="arch-node-title">Edge AI & Vision</h3>
+                    <p class="problem-item-desc">
+                        On-robot neural perception running on Jetson Orin / RPi 5. Processes 2D LiDAR sweeps and RGB-D cameras for pallet detection and dynamic obstacle tracking.
+                    </p>
+                    <div class="arch-node-tech">
+                        <span class="tech-tag">PyTorch</span>
+                        <span class="tech-tag">OpenCV</span>
+                        <span class="tech-tag">YOLOv8</span>
+                        <span class="tech-tag">TensorRT</span>
+                    </div>
+                </div>
+
+                <div class="arch-node-card">
+                    <div class="arch-node-badge">LAYER 02 // TASK ALLOCATION</div>
+                    <h3 class="arch-node-title">CBBA Auction Engine</h3>
+                    <p class="problem-item-desc">
+                        Decentralized consensus protocol. Robots broadcast task bid bundles over peer mesh gossip. Replaces centralized ERP bottlenecks with resilient swarm bidding.
+                    </p>
+                    <div class="arch-node-tech">
+                        <span class="tech-tag">CBBA</span>
+                        <span class="tech-tag">Mesh Gossip</span>
+                        <span class="tech-tag">C++ 20</span>
+                        <span class="tech-tag">Zero Bottleneck</span>
+                    </div>
+                </div>
+
+                <div class="arch-node-card">
+                    <div class="arch-node-badge">LAYER 03 // GLOBAL ROUTING</div>
+                    <h3 class="arch-node-title">CBS + Space-Time A*</h3>
+                    <p class="problem-item-desc">
+                        High-level conflict search tree. Discovers multi-agent space-time collisions, applies vertex/edge constraints, and plans time-synchronized warehouse highway paths.
+                    </p>
+                    <div class="arch-node-tech">
+                        <span class="tech-tag">CBS</span>
+                        <span class="tech-tag">Space-Time A*</span>
+                        <span class="tech-tag">Wait-Step Insert</span>
+                        <span class="tech-tag">Reservation Table</span>
+                    </div>
+                </div>
+
+                <div class="arch-node-card">
+                    <div class="arch-node-badge">LAYER 04 // KINEMATICS & COMMS</div>
+                    <h3 class="arch-node-title">ORCA & ROS 2 Middleware</h3>
+                    <p class="problem-item-desc">
+                        Micro-second continuous collision avoidance via Velocity Obstacles. Bridges Nav2 motor velocity commands directly into ROS 2 topics and MQTT telemetry.
+                    </p>
+                    <div class="arch-node-tech">
+                        <span class="tech-tag">ORCA</span>
+                        <span class="tech-tag">ROS 2 Humble</span>
+                        <span class="tech-tag">MQTT</span>
+                        <span class="tech-tag">DDS Cyclone</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 05: LIVE WAREHOUSE SIMULATION (CENTERPIECE)
+        ================================================== -->
+        <section class="section-wrapper simulation-viewport-section" id="section-simulation">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 05 // LIVE COMMAND CENTER</div>
+                <h2 class="section-title">AUTONOMOUS WAREHOUSE FLEET SIMULATION</h2>
+                <p class="section-subtitle">
+                    Real working frontend simulation engine running 5 AMRs, dynamic CBBA task allocation, space-time CBS conflict resolution, and ORCA velocity evasion. Click canvas to inspect robots or trigger dynamic events below.
+                </p>
+            </div>
+
+            <!-- Command Center Layout: Controls | Canvas | Telemetry -->
+            <div class="sim-command-deck">
+                <!-- Left: Controls Deck -->
+                <div id="sim-controls-mount"></div>
+
+                <!-- Center: High-Performance Canvas Viewport -->
+                <div class="canvas-display-card">
+                    <div class="canvas-header-bar">
+                        <div class="canvas-title-group">
+                            <span class="canvas-status-led"></span>
+                            <span>WAREHOUSE GRID ALPHA-01 // 28 × 18 AISLE TOPOLOGY</span>
+                        </div>
+                        <div class="canvas-meta-tags">
+                            <span>FPS: <strong id="sim-fps-val">60.0</strong></span>
+                            <span>TICK: <strong id="sim-tick-val">120ms</strong></span>
+                            <span>DDS: <strong style="color:var(--green);">SYNCED</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="canvas-body-wrapper">
+                        <canvas id="warehouse-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right: Telemetry HUD & Inspector -->
+                <div id="sim-telemetry-mount"></div>
+            </div>
+
+            <!-- Bottom: Live Event Log Terminal -->
+            <div id="sim-terminal-mount"></div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 06: CBBA TASK ALLOCATION DEEP DIVE
+        ================================================== -->
+        <section class="section-wrapper" id="section-cbba">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 06 // DECENTRALIZED AUCTIONS</div>
+                <h2 class="section-title">CBBA: CONSENSUS-BASED BUNDLE ALGORITHM</h2>
+                <p class="section-subtitle">
+                    How robots evaluate bids without a central server. Mathematical scoring balances urgency, distance, battery percentage, and existing workload.
+                </p>
+            </div>
+
+            <div class="algorithm-deep-grid">
+                <!-- Theory & Interactive Sliders -->
+                <div class="algo-theory-card">
+                    <h3 class="problem-item-title cyan">Bidding Score Function</h3>
+                    <p class="problem-item-desc">
+                        Each AMR \(i\) computes marginal reward \(c_{ij}\) for task \(j\). The bid decays exponentially with Euclidean distance, scales with priority and battery health, and penalizes heavy current workloads:
+                    </p>
+
+                    <div class="algo-formula-box">
+                        c_ij = Priority_j · exp(-λ · d_ij) · (Battery_i / 100) · (1 / (1 + Workload_i))
+                    </div>
+
+                    <div class="algo-slider-group">
+                        <div class="slider-row">
+                            <div class="slider-label-row">
+                                <span>TASK PRIORITY:</span>
+                                <span class="mono cyan" id="cbba-priority-val">4</span>
+                            </div>
+                            <input type="range" id="cbba-priority" min="1" max="5" value="4">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label-row">
+                                <span>R1 DISTANCE TO PICKUP (m):</span>
+                                <span class="mono cyan" id="cbba-dist-r1-val">6.2</span>
+                            </div>
+                            <input type="range" id="cbba-dist-r1" min="1" max="30" step="0.5" value="6.2">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label-row">
+                                <span>R1 BATTERY LEVEL (%):</span>
+                                <span class="mono green" id="cbba-batt-r1-val">92</span>
+                            </div>
+                            <input type="range" id="cbba-batt-r1" min="10" max="100" value="92">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-label-row">
+                                <span>R2 DISTANCE TO PICKUP (m):</span>
+                                <span class="mono cyan" id="cbba-dist-r2-val">14.8</span>
+                            </div>
+                            <input type="range" id="cbba-dist-r2" min="1" max="30" step="0.5" value="14.8">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Calculated Bidding Table -->
+                <div class="cbba-table-container" id="cbba-interactive-demo">
+                    <div class="section-micro-header">
+                        <span>LIVE CBBA BID EVALUATION FOR TASK T04</span>
+                        <span class="mono cyan">ROUND 01 CONSENSUS</span>
+                    </div>
+
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>ROBOT</th>
+                                <th>DISTANCE</th>
+                                <th>BATTERY</th>
+                                <th>RAW BID</th>
+                                <th>OUTCOME</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cbba-table-body">
+                            <!-- Populated dynamically by AlgorithmPlayground -->
+                        </tbody>
+                    </table>
+
+                    <div id="cbba-winner-summary"></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 07: CBS + A* PATH PLANNING DEEP DIVE
+        ================================================== -->
+        <section class="section-wrapper" id="section-cbs">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 07 // SPACE-TIME PATHFINDING</div>
+                <h2 class="section-title">CBS: CONFLICT-BASED SEARCH + SPACE-TIME A*</h2>
+                <p class="section-subtitle">
+                    Resolving multi-agent conflicts without gridlocks. CBS detects vertex collisions and edge swaps in space-time (x, y, t) and branches constraints until paths are guaranteed conflict-free.
+                </p>
+            </div>
+
+            <div class="algorithm-deep-grid">
+                <!-- Interactive CBS Constraint Tree Sandbox -->
+                <div class="cbs-demo-box">
+                    <div class="section-micro-header" style="width:100%;">
+                        <span>SPACE-TIME INTERSECTION SANDBOX</span>
+                        <span class="orange mono">TWO-LEVEL CONSTRAINT TREE</span>
+                    </div>
+                    <canvas id="cbs-canvas-demo" width="460" height="260" style="width:100%; height:auto;"></canvas>
+
+                    <div class="cbs-step-controller">
+                        <button class="cbs-step-btn active" data-step="0">1. DETECT CONFLICT</button>
+                        <button class="cbs-step-btn" data-step="1">2. BRANCH CONSTRAINT</button>
+                        <button class="cbs-step-btn" data-step="2">3. VERIFY RESOLVED</button>
+                    </div>
+                </div>
+
+                <div class="algo-theory-card">
+                    <h3 class="problem-item-title orange">High-Level Constraint Formulation</h3>
+                    <p class="problem-item-desc">
+                        When two robots approach an intersection at the same predicted time step \(t\), CBS formulates an explicit constraint:
+                    </p>
+
+                    <div class="algo-formula-box" style="border-color: rgba(255, 159, 10, 0.3); color: var(--orange);">
+                        Constraint: &lang; Agent R2, Location (5, 3), Time t = 4 &rang;
+                    </div>
+
+                    <p class="problem-item-desc">
+                        The low-level Space-Time A* search replans Agent R2's trajectory with a temporary <strong>WAIT action</strong> at \(t=3\), allowing Agent R1 to clear the corridor without slowing down the global warehouse throughput.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 08: ORCA REAL-TIME LOCAL AVOIDANCE DEEP DIVE
+        ================================================== -->
+        <section class="section-wrapper" id="section-orca">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 08 // REAL-TIME KINEMATICS</div>
+                <h2 class="section-title">ORCA: OPTIMAL RECIPROCAL COLLISION AVOIDANCE</h2>
+                <p class="section-subtitle">
+                    While CBS handles global space-time routing, ORCA operates at 50Hz on each robot's motor controllers for continuous 2D local collision avoidance.
+                </p>
+            </div>
+
+            <div class="algorithm-deep-grid">
+                <div class="orca-demo-box">
+                    <div class="section-micro-header" style="width:100%;">
+                        <span>VELOCITY OBSTACLE (VO) CONE GEOMETRY</span>
+                        <span class="green mono">50/50 RECIPROCAL EVASION</span>
+                    </div>
+                    <canvas id="orca-canvas-demo" width="460" height="260" style="width:100%; height:auto;"></canvas>
+
+                    <div class="slider-row" style="width:100%; margin-top:1rem;">
+                        <div class="slider-label-row">
+                            <span>LOOKAHEAD HORIZON (τ):</span>
+                            <span class="mono green" id="orca-tau-val">2.0s</span>
+                        </div>
+                        <input type="range" id="orca-tau" min="1.0" max="4.0" step="0.2" value="2.0">
+                    </div>
+                </div>
+
+                <div class="algo-theory-card">
+                    <h3 class="problem-item-title green">Reciprocal Velocity Sharing</h3>
+                    <p class="problem-item-desc">
+                        Given relative position \(\mathbf{p}_B - \mathbf{p}_A\) and combined radii \(r_A + r_B\), the Velocity Obstacle \(VO_{A|B}^\tau\) defines collision velocities. The minimum evasion vector \(\mathbf{u}\) is shared reciprocally:
+                    </p>
+
+                    <div class="algo-formula-box" style="border-color: rgba(0, 255, 136, 0.3); color: var(--green);">
+                        v_A^safe = v_A^pref + 0.5 · u &nbsp;&nbsp;|&nbsp;&nbsp; v_B^safe = v_B^pref - 0.5 · u
+                    </div>
+
+                    <p class="problem-item-desc">
+                        Because both AMRs know their peer will assume exactly 50% of the evasion effort, neither robot hesitates or deadlocks. Smooth, fluid passing is achieved at full cruising speed.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 09: EDGE AI & ON-ROBOT INTELLIGENCE
+        ================================================== -->
+        <section class="section-wrapper" id="section-edge-ai">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 09 // EMBEDDED PERCEPTION</div>
+                <h2 class="section-title">EDGE AI: SUB-15MS LOCAL DECISION MAKING</h2>
+                <p class="section-subtitle">
+                    Why Edge AI? By placing computer vision inference and local velocity optimization directly onboard NVIDIA Jetson Orin Nano modules, ROBOMESS eliminates cloud latency jitters and network outages.
+                </p>
+            </div>
+
+            <div class="edge-ai-grid">
+                <div class="edge-sensor-frame">
+                    <div class="sensor-header">
+                        <span>ON-ROBOT NEURAL INFERENCE (JETSON ORIN NANO)</span>
+                        <span class="mono green">TENSORRT ACCELERATED</span>
+                    </div>
+
+                    <div style="background: #0B1120; border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 4px; padding: 1.5rem; text-align: center; position: relative;">
+                        <svg width="100%" height="160" viewBox="0 0 300 160">
+                            <!-- LiDAR scan rays -->
+                            <circle cx="150" cy="80" r="60" fill="none" stroke="rgba(0, 240, 255, 0.2)" stroke-dasharray="4,4"/>
+                            <circle cx="150" cy="80" r="35" fill="none" stroke="rgba(0, 240, 255, 0.3)"/>
+                            <circle cx="150" cy="80" r="10" fill="#00F0FF"/>
+                            
+                            <!-- Bounding box pallet -->
+                            <rect x="200" y="40" width="45" height="35" fill="rgba(255, 159, 10, 0.15)" stroke="#FF9F0A" stroke-width="1.5"/>
+                            <text x="202" y="34" fill="#FF9F0A" font-size="8" font-family="monospace">PALLET 98.4%</text>
+
+                            <!-- Bounding box pedestrian/cone -->
+                            <rect x="65" y="85" width="30" height="30" fill="rgba(255, 51, 68, 0.15)" stroke="#FF3344" stroke-width="1.5"/>
+                            <text x="65" y="80" fill="#FF3344" font-size="8" font-family="monospace">OBSTACLE</text>
+
+                            <!-- Laser line -->
+                            <line x1="150" y1="80" x2="200" y2="55" stroke="#00FF88" stroke-width="1"/>
+                            <line x1="150" y1="80" x2="95" y2="100" stroke="#FF3344" stroke-width="1"/>
+                        </svg>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; margin-top:1rem; font-family:var(--font-mono); font-size:0.8rem;">
+                        <span>INFERENCE RATE: <strong class="green" id="edge-ai-fps">84.2 FPS</strong></span>
+                        <span>CONFIDENCE: <strong class="cyan">98.6%</strong></span>
+                    </div>
+                </div>
+
+                <div class="benchmark-comparison-card">
+                    <h3 class="problem-item-title cyan">Latency & Resilience Benchmark</h3>
+                    
+                    <div class="benchmark-row">
+                        <div class="bench-title">ROBOMESS Edge Compute</div>
+                        <div class="bench-val green" id="edge-ai-latency">11.8 ms</div>
+                    </div>
+
+                    <div class="benchmark-row">
+                        <div class="bench-title">Centralized Cloud API</div>
+                        <div class="bench-val red" id="cloud-ai-latency">264 ms</div>
+                    </div>
+
+                    <div class="benchmark-row">
+                        <div class="bench-title">Offline Fleet Survival</div>
+                        <div class="bench-val cyan">100% (Zero Cloud Dependency)</div>
+                    </div>
+
+                    <div class="benchmark-row">
+                        <div class="bench-title">Bandwidth Consumption</div>
+                        <div class="bench-val purple">&lt; 12 KB/s Telemetry Only</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 10: DISTRIBUTED FLEET CONTROL
+        ================================================== -->
+        <section class="section-wrapper" id="section-mesh">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 10 // P2P SWARM NETWORKING</div>
+                <h2 class="section-title">DISTRIBUTED FLEET MESH ARCHITECTURE</h2>
+                <p class="section-subtitle">
+                    Instead of relying entirely on a single central decision-maker, ROBOMESS distributes time-critical intelligence closer to the robots via peer-to-peer gossip networking.
+                </p>
+            </div>
+
+            <div class="mesh-diagram-container">
+                <svg width="600" height="220" viewBox="0 0 600 220" class="mesh-svg">
+                    <!-- Mesh Links -->
+                    <line x1="120" y1="60" x2="300" y2="40" stroke="rgba(0, 240, 255, 0.4)" stroke-width="2" stroke-dasharray="4,4"/>
+                    <line x1="300" y1="40" x2="480" y2="60" stroke="rgba(0, 240, 255, 0.4)" stroke-width="2" stroke-dasharray="4,4"/>
+                    <line x1="120" y1="60" x2="200" y2="160" stroke="rgba(0, 240, 255, 0.4)" stroke-width="2" stroke-dasharray="4,4"/>
+                    <line x1="480" y1="60" x2="400" y2="160" stroke="rgba(0, 240, 255, 0.4)" stroke-width="2" stroke-dasharray="4,4"/>
+                    <line x1="200" y1="160" x2="400" y2="160" stroke="rgba(0, 240, 255, 0.4)" stroke-width="2" stroke-dasharray="4,4"/>
+                    <line x1="300" y1="40" x2="200" y2="160" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1"/>
+                    <line x1="300" y1="40" x2="400" y2="160" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1"/>
+
+                    <!-- Nodes -->
+                    <!-- R1 -->
+                    <circle cx="120" cy="60" r="24" fill="#0B1320" stroke="#00F0FF" stroke-width="2"/>
+                    <text x="120" y="64" fill="#00F0FF" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">R1</text>
+                    
+                    <!-- R3 -->
+                    <circle cx="300" cy="40" r="24" fill="#0B1320" stroke="#FFB300" stroke-width="2"/>
+                    <text x="300" y="44" fill="#FFB300" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">R3</text>
+
+                    <!-- R4 -->
+                    <circle cx="480" cy="60" r="24" fill="#0B1320" stroke="#D946EF" stroke-width="2"/>
+                    <text x="480" y="64" fill="#D946EF" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">R4</text>
+
+                    <!-- R2 -->
+                    <circle cx="200" cy="160" r="24" fill="#0B1320" stroke="#00FF88" stroke-width="2"/>
+                    <text x="200" y="164" fill="#00FF88" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">R2</text>
+
+                    <!-- R5 -->
+                    <circle cx="400" cy="160" r="24" fill="#0B1320" stroke="#3B82F6" stroke-width="2"/>
+                    <text x="400" y="164" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">R5</text>
+                </svg>
+
+                <p class="problem-item-desc" style="max-width: 680px; margin: 1rem auto 0 auto;">
+                    Every robot broadcasts local task bids, battery health, and space-time reservation horizons. If any node drops off the network, the remaining cluster converges autonomously within 2 consensus rounds.
+                </p>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 12: FAILURE & RECOVERY DEMO
+        ================================================== -->
+        <section class="section-wrapper" id="section-recovery">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 12 // FAULT TOLERANCE</div>
+                <h2 class="section-title">FAILURE RESILIENCE & DYNAMIC REPLANNING</h2>
+                <p class="section-subtitle">
+                    What happens when a robot suddenly breaks down or runs out of battery mid-aisle? ROBOMESS automatically initiates a multi-stage consensus re-auction and trajectory bypass.
+                </p>
+            </div>
+
+            <div class="recovery-timeline">
+                <div class="recovery-step-item">
+                    <div class="step-badge-col">
+                        <div class="step-num-circle">1</div>
+                    </div>
+                    <div class="step-content-col">
+                        <h4 class="step-heading red">Hardware Fault Detected (Heartbeat Timeout)</h4>
+                        <p class="step-body-txt">AMR-03 motor driver alerts a stall. DDS heartbeat lapses for 150ms. Node marked OFFLINE by peer monitors.</p>
+                    </div>
+                </div>
+
+                <div class="recovery-step-item">
+                    <div class="step-badge-col">
+                        <div class="step-num-circle">2</div>
+                    </div>
+                    <div class="step-content-col">
+                        <h4 class="step-heading orange">Task Orphan Released</h4>
+                        <p class="step-body-txt">Assigned pallet order is immediately detached from R3 and returned to the global unassigned task auction pool.</p>
+                    </div>
+                </div>
+
+                <div class="recovery-step-item">
+                    <div class="step-badge-col">
+                        <div class="step-num-circle">3</div>
+                    </div>
+                    <div class="step-content-col">
+                        <h4 class="step-heading cyan">CBBA Re-Auction Triggered</h4>
+                        <p class="step-body-txt">Active fleet (R1, R2, R4, R5) calculates fresh marginal bids. Task is seamlessly reallocated to AMR-04 (Echo).</p>
+                    </div>
+                </div>
+
+                <div class="recovery-step-item">
+                    <div class="step-badge-col">
+                        <div class="step-num-circle">4</div>
+                    </div>
+                    <div class="step-content-col">
+                        <h4 class="step-heading green">CBS Space-Time Detour Replanning</h4>
+                        <p class="step-body-txt">Disabled robot R3 is converted into a dynamic static obstacle. Other AMRs replan their paths to safely bypass the stalled aisle.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="cyber-btn primary-pulse" id="btn-run-failure-sim" style="padding: 12px 28px;">
+                    <span>⚡ TRIGGER LIVE FAULT RECOVERY IN SIMULATOR</span>
+                </button>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 13: TECHNOLOGY STACK
+        ================================================== -->
+        <section class="section-wrapper" id="section-stack">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 13 // ENGINEERING MATRIX</div>
+                <h2 class="section-title">FULL TECHNOLOGY STACK</h2>
+                <p class="section-subtitle">
+                    Production-grade robotics software stack combining high-performance C++ algorithm engines with Python Edge AI pipelines and modern web visualization.
+                </p>
+            </div>
+
+            <div class="tech-stack-grid">
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <span class="tech-name">ROS 2 Humble</span>
+                        <span class="tech-layer-tag">MIDDLEWARE</span>
+                    </div>
+                    <p class="tech-card-desc">DDS pub/sub messaging, Nav2 action servers, hardware lifecycle nodes, and coordinate transform (TF2) tree.</p>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <span class="tech-name">C++ 20</span>
+                        <span class="tech-layer-tag">ALGORITHMS</span>
+                    </div>
+                    <p class="tech-card-desc">Low-latency core implementation of CBS high-level constraint search tree, Space-Time A*, and ORCA KD-Tree.</p>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <span class="tech-name">PyTorch & YOLO</span>
+                        <span class="tech-layer-tag">EDGE AI</span>
+                    </div>
+                    <p class="tech-card-desc">Deep neural vision perception for pallet detection, dynamic obstacle classification, and visual odometry.</p>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <span class="tech-name">OpenCV</span>
+                        <span class="tech-layer-tag">VISION</span>
+                    </div>
+                    <p class="tech-card-desc">AprilTag / QR fiducial tracking for millimeter-precise docking into high-density pallet racks and charging pads.</p>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <span class="tech-name">MQTT / Zenoh</span>
+                        <span class="tech-layer-tag">TELEMETRY</span>
+                    </div>
+                    <p class="tech-card-desc">Lightweight micro-broker telemetry streaming to ERP, warehouse management systems (WMS), and digital twin HUD.</p>
+                </div>
+
+                <div class="tech-card">
+                    <div class="tech-card-header">
+                        <span class="tech-name">HTML5 Canvas 2D</span>
+                        <span class="tech-layer-tag">WEB DIGITAL TWIN</span>
+                    </div>
+                    <p class="tech-card-desc">Zero-dependency, 60 FPS multi-layer hardware-accelerated rendering of warehouse topology and AMRs.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 14: FUTURE ROADMAP
+        ================================================== -->
+        <section class="section-wrapper" id="section-roadmap">
+            <div class="section-header">
+                <div class="section-tag"><span class="tag-dot"></span> SECTION 14 // DEVELOPMENT TIMELINE</div>
+                <h2 class="section-title">ROBOMESS ENGINEERING ROADMAP</h2>
+                <p class="section-subtitle">
+                    Structured 6-phase trajectory scaling from algorithmic mathematical proof-of-concept to 100+ heterogeneous AMR deployment in commercial fulfillment hubs.
+                </p>
+            </div>
+
+            <div class="roadmap-timeline-grid">
+                <div class="roadmap-card active-phase">
+                    <div class="phase-tag">PHASE 01 // CURRENT</div>
+                    <h4 class="phase-title">Algorithm Validation</h4>
+                    <p class="phase-desc">CBBA bundle auction logic, CBS space-time reservation graph, and ORCA velocity obstacle simulations completed.</p>
+                </div>
+
+                <div class="roadmap-card">
+                    <div class="phase-tag">PHASE 02</div>
+                    <h4 class="phase-title">ROS 2 & Gazebo Integration</h4>
+                    <p class="phase-desc">Physics-based digital twin in Gazebo Fortress with realistic AMR differential-drive dynamics and 2D LiDAR sensors.</p>
+                </div>
+
+                <div class="roadmap-card">
+                    <div class="phase-tag">PHASE 03</div>
+                    <h4 class="phase-title">Physical Hardware Prototyping</h4>
+                    <p class="phase-desc">Fabrication of 1:4 scale autonomous differential-drive mobile robots equipped with RPLiDAR A1 and OAK-D cameras.</p>
+                </div>
+
+                <div class="roadmap-card">
+                    <div class="phase-tag">PHASE 04</div>
+                    <h4 class="phase-title">Edge AI Jetson Deployment</h4>
+                    <p class="phase-desc">Onboarding NVIDIA Jetson Orin Nano modules with TensorRT FP16 quantization for sub-12ms inference.</p>
+                </div>
+
+                <div class="roadmap-card">
+                    <div class="phase-tag">PHASE 05</div>
+                    <h4 class="phase-title">WMS / ERP Cloud Connector</h4>
+                    <p class="phase-desc">Standardized REST and MQTT API connectors for SAP, Manhattan Associates, and open-source Warehouse Management Systems.</p>
+                </div>
+
+                <div class="roadmap-card">
+                    <div class="phase-tag">PHASE 06</div>
+                    <h4 class="phase-title">Heterogeneous Mega-Fleet</h4>
+                    <p class="phase-desc">Swarm scaling to 100+ heterogeneous vehicles including autonomous forklifts, tuggers, and collaborative cobot arms.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ==================================================
+             SECTION 15: FINAL CALL TO ACTION / SUMMARY
+        ================================================== -->
+        <section class="final-cta-section" id="section-mission">
+            <div class="section-tag"><span class="tag-dot"></span> SECTION 15 // MISSION STATEMENT</div>
+            <h2 class="final-quote">
+                "FROM INDIVIDUAL ROBOTS<br>
+                TO ONE COORDINATED FLEET."
+            </h2>
+            <div class="final-brand">ROBOMESS // EDGE INTELLIGENCE. DISTRIBUTED COORDINATION.</div>
+
+            <div class="hero-cta-group">
+                <a href="#section-simulation" class="hero-btn hero-btn-primary">
+                    <span>RUN SIMULATION AGAIN</span>
+                    <span>↻</span>
+                </a>
+                <a href="#section-architecture" class="hero-btn hero-btn-secondary">
+                    <span>REVIEW SYSTEM ARCHITECTURE</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <strong>ROBOMESS</strong> — Smart India Hackathon 2026 (SIH26123)
+            </div>
+            <div style="color: #475569;">
+                Edge-AI Distributed Fleet Coordination Platform for Autonomous Mobile Robots
+            </div>
+            <div>
+                Built for High-Performance Autonomous Logistics
+            </div>
+        </div>
+    </footer>
+
+    <!-- Application Bootstrap (ES Module) -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

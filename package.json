@@ -1,0 +1,9 @@
+{
+  "name": "robomess",
+  "version": "1.0.0",
+  "description": "ROBOMESS - Edge-AI Based Distributed Fleet Coordination for Autonomous Mobile Robots in Smart Warehouses",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
