@@ -1,5 +1,5 @@
-// ROBOMESS - Main Application Orchestrator
-// Initializes engines, renderers, 3D Virtual Warehouse Window, UI panels, and Web Audio synthesis
+// ROBOMESS - Main Application Orchestrator in TypeScript
+// Coordinates SimulationEngine, 2D WarehouseRenderer, and 3D VirtualWarehouseWindow Digital Twin
 
 import { SimulationEngine } from './simulation/SimulationEngine.js';
 import { WarehouseRenderer } from './components/WarehouseRenderer.js';
@@ -9,60 +9,60 @@ import { TelemetryPanel } from './components/TelemetryPanel.js';
 import { EventLog } from './components/EventLog.js';
 import { AlgorithmPlayground } from './components/AlgorithmPlayground.js';
 import { Navigation } from './components/Navigation.js';
+import { ViewMode } from './types/index.js';
 
-class RobomessApp {
+export class RobomessApp {
+    public engine: SimulationEngine;
+    public renderer2D: WarehouseRenderer | null = null;
+    public virtualWindow3D: VirtualWarehouseWindow | null = null;
+    public controls: SimulationControls | null = null;
+    
+    private audioCtx: any = null;
+    private audioEnabled: boolean = false;
+
     constructor() {
-        this.engine = null;
-        this.renderer2D = null;
-        this.virtualWindow3D = null;
-        this.controls = null;
-        this.audioCtx = null;
-        this.audioEnabled = false;
-
+        this.engine = new SimulationEngine();
         this.init();
     }
 
-    init() {
-        // 1. Initialize Simulation Engine
-        this.engine = new SimulationEngine();
-
-        // 2. Mount 2D Canvas Renderer
-        const canvas2D = document.getElementById('warehouse-canvas');
+    public init(): void {
+        // 1. Mount 2D Canvas Renderer
+        const canvas2D = document.getElementById('warehouse-canvas') as HTMLCanvasElement;
         if (canvas2D) {
             this.renderer2D = new WarehouseRenderer(canvas2D, this.engine);
         }
 
-        // 3. Mount 3D Virtual Warehouse Window
+        // 2. Mount 3D Virtual Warehouse Window
         const vwMount = document.getElementById('virtual-warehouse-mount');
         if (vwMount) {
             this.virtualWindow3D = new VirtualWarehouseWindow(vwMount, this.engine);
         }
 
-        // 4. Mount Simulation Controls with ViewMode Switcher
+        // 3. Mount Simulation Controls with ViewMode Switching
         const controlsMount = document.getElementById('sim-controls-mount');
         if (controlsMount) {
             this.controls = new SimulationControls(controlsMount, this.engine);
-            this.controls.onViewModeChange = (mode) => this.switchViewMode(mode);
+            this.controls.onViewModeChange = (mode: ViewMode) => this.switchViewMode(mode);
         }
 
-        // 5. Mount Telemetry & Event Terminal
+        // 4. Mount Telemetry & Event Terminal
         const telemetryMount = document.getElementById('sim-telemetry-mount');
         if (telemetryMount) new TelemetryPanel(telemetryMount, this.engine);
 
         const terminalMount = document.getElementById('sim-terminal-mount');
         if (terminalMount) new EventLog(terminalMount, this.engine);
 
-        // 6. Initialize Deep Dive Playgrounds & Navigation
+        // 5. Initialize Algorithm Playgrounds & Navigation
         new AlgorithmPlayground();
         new Navigation();
 
-        // 7. Setup Interactive Background Canvas & Problem Demo
+        // 6. Setup Interactive Background Canvas & Problem Demo
         this.initHeroCanvas();
         this.initProblemSection();
         this.initFailureRecoverySection();
         this.initAudioAndInteractions();
 
-        // 8. Start 2D Canvas Render Loop
+        // 7. Start 2D Render Loop
         this.start2DRenderLoop();
 
         // Auto-start simulation in background with gentle speed
@@ -71,41 +71,44 @@ class RobomessApp {
             const playBtn = document.getElementById('btn-play-pause');
             if (playBtn) {
                 playBtn.classList.add('active');
-                playBtn.querySelector('.btn-icon').textContent = '⏸';
-                playBtn.querySelector('.btn-text').textContent = 'PAUSE FLEET';
+                const icon = playBtn.querySelector('.btn-icon');
+                const text = playBtn.querySelector('.btn-text');
+                if (icon) icon.textContent = '⏸';
+                if (text) text.textContent = 'PAUSE FLEET';
             }
         }, 800);
     }
 
-    switchViewMode(mode) {
+    public switchViewMode(mode: ViewMode): void {
         const deck = document.querySelector('.sim-display-area');
         const card2D = document.querySelector('.canvas-display-card-2d');
         const card3D = document.querySelector('#virtual-warehouse-mount');
 
         if (!deck || !card2D || !card3D) return;
 
-        if (mode === 'VIEW_2D') {
+        if (mode === ViewMode.VIEW_2D) {
             deck.classList.remove('split-mode', 'only-3d-mode');
             deck.classList.add('only-2d-mode');
-            card2D.style.display = 'flex';
-            card3D.style.display = 'none';
-        } else if (mode === 'VIEW_3D') {
+            (card2D as HTMLElement).style.display = 'flex';
+            (card3D as HTMLElement).style.display = 'none';
+        } else if (mode === ViewMode.VIEW_3D) {
             deck.classList.remove('split-mode', 'only-2d-mode');
             deck.classList.add('only-3d-mode');
-            card2D.style.display = 'none';
-            card3D.style.display = 'block';
+            (card2D as HTMLElement).style.display = 'none';
+            (card3D as HTMLElement).style.display = 'block';
         } else {
-            // Split Mode
+            // Split Mode (Both 2D Map and 3D Virtual Window visible)
             deck.classList.remove('only-2d-mode', 'only-3d-mode');
             deck.classList.add('split-mode');
-            card2D.style.display = 'flex';
-            card3D.style.display = 'block';
+            (card2D as HTMLElement).style.display = 'flex';
+            (card3D as HTMLElement).style.display = 'block';
         }
 
+        // Trigger resize event for WebGL aspect ratio update
         window.dispatchEvent(new Event('resize'));
     }
 
-    start2DRenderLoop() {
+    private start2DRenderLoop(): void {
         const render = () => {
             if (this.renderer2D) {
                 this.renderer2D.render();
@@ -115,11 +118,11 @@ class RobomessApp {
         requestAnimationFrame(render);
     }
 
-    initHeroCanvas() {
-        const heroCanvas = document.getElementById('hero-canvas');
+    private initHeroCanvas(): void {
+        const heroCanvas = document.getElementById('hero-canvas') as HTMLCanvasElement;
         if (!heroCanvas) return;
 
-        const ctx = heroCanvas.getContext('2d');
+        const ctx = heroCanvas.getContext('2d')!;
         const resize = () => {
             if (heroCanvas.parentElement) {
                 heroCanvas.width = heroCanvas.parentElement.clientWidth;
@@ -176,13 +179,13 @@ class RobomessApp {
         requestAnimationFrame(animateHero);
     }
 
-    initProblemSection() {
+    private initProblemSection(): void {
         const btn = document.getElementById('btn-run-problem-demo');
         const alertBox = document.getElementById('problem-conflict-alert');
-        const canvas = document.getElementById('problem-demo-canvas');
+        const canvas = document.getElementById('problem-demo-canvas') as HTMLCanvasElement;
         if (!canvas || !btn) return;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d')!;
         let state = 'IDLE';
         let t = 0;
 
@@ -279,7 +282,7 @@ class RobomessApp {
         renderProblem();
     }
 
-    initFailureRecoverySection() {
+    private initFailureRecoverySection(): void {
         const triggerBtn = document.getElementById('btn-run-failure-sim');
         if (!triggerBtn) return;
 
@@ -294,16 +297,17 @@ class RobomessApp {
         });
     }
 
-    initAudioAndInteractions() {
+    private initAudioAndInteractions(): void {
         const audioBtn = document.getElementById('btn-audio-toggle');
         if (audioBtn) {
             audioBtn.addEventListener('click', () => {
                 if (!this.audioCtx) {
-                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    this.audioCtx = new ((window as any).AudioContext || (window as any).webkitAudioContext)();
                 }
                 this.audioEnabled = !this.audioEnabled;
                 audioBtn.classList.toggle('active', this.audioEnabled);
-                audioBtn.querySelector('.audio-label').textContent = this.audioEnabled ? 'AUDIO: ON' : 'AUDIO: OFF';
+                const label = audioBtn.querySelector('.audio-label');
+                if (label) label.textContent = this.audioEnabled ? 'AUDIO: ON' : 'AUDIO: OFF';
                 if (this.audioEnabled) this.playTone(660, 0.08, 'sine');
             });
         }
@@ -317,7 +321,7 @@ class RobomessApp {
         }
     }
 
-    playTone(freq, duration, type = 'sine') {
+    public playTone(freq: number, duration: number, type: OscillatorType = 'sine'): void {
         if (!this.audioEnabled || !this.audioCtx) return;
         try {
             const osc = this.audioCtx.createOscillator();
@@ -335,7 +339,7 @@ class RobomessApp {
         }
     }
 
-    playAlertSound() {
+    public playAlertSound(): void {
         if (!this.audioEnabled || !this.audioCtx) return;
         this.playTone(440, 0.1, 'sawtooth');
         setTimeout(() => this.playTone(880, 0.15, 'sawtooth'), 120);
@@ -343,5 +347,5 @@ class RobomessApp {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    window.robomessApp = new RobomessApp();
+    (window as any).robomessApp = new RobomessApp();
 });

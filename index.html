@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/simulation.css">
     <link rel="stylesheet" href="css/components.css">
+
+    <!-- Three.js 3D WebGL Engine for Virtual Warehouse Window -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
@@ -312,23 +315,29 @@
                 <!-- Left: Controls Deck -->
                 <div id="sim-controls-mount"></div>
 
-                <!-- Center: High-Performance Canvas Viewport -->
-                <div class="canvas-display-card">
-                    <div class="canvas-header-bar">
-                        <div class="canvas-title-group">
-                            <span class="canvas-status-led"></span>
-                            <span>WAREHOUSE GRID ALPHA-01 // 28 × 18 AISLE TOPOLOGY</span>
+                <!-- Center: High-Performance Digital Twin Viewport (2D Tactical Grid + 3D Virtual Window) -->
+                <div class="sim-display-area split-mode">
+                    <!-- 2D Tactical Grid Viewport -->
+                    <div class="canvas-display-card canvas-display-card-2d">
+                        <div class="canvas-header-bar">
+                            <div class="canvas-title-group">
+                                <span class="canvas-status-led"></span>
+                                <span>2D TACTICAL GRID // 28 × 18 AISLE TOPOLOGY</span>
+                            </div>
+                            <div class="canvas-meta-tags">
+                                <span>FPS: <strong id="sim-fps-val">60.0</strong></span>
+                                <span>TICK: <strong id="sim-tick-val">120ms</strong></span>
+                                <span>DDS: <strong style="color:var(--green);">SYNCED</strong></span>
+                            </div>
                         </div>
-                        <div class="canvas-meta-tags">
-                            <span>FPS: <strong id="sim-fps-val">60.0</strong></span>
-                            <span>TICK: <strong id="sim-tick-val">120ms</strong></span>
-                            <span>DDS: <strong style="color:var(--green);">SYNCED</strong></span>
+
+                        <div class="canvas-body-wrapper">
+                            <canvas id="warehouse-canvas"></canvas>
                         </div>
                     </div>
 
-                    <div class="canvas-body-wrapper">
-                        <canvas id="warehouse-canvas"></canvas>
-                    </div>
+                    <!-- 3D Virtual Warehouse Window (Digital Twin) -->
+                    <div id="virtual-warehouse-mount"></div>
                 </div>
 
                 <!-- Right: Telemetry HUD & Inspector -->

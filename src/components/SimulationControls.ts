@@ -1,18 +1,22 @@
-// ROBOMESS - Simulation Controls UI Component
-// Handles Playback, Speed, Algorithm toggles, Layer overlays, Event Triggers, and Viewport Mode Switcher
+// ROBOMESS - Simulation Controls UI Component in TypeScript
+
+import { SimulationEngine } from '../simulation/SimulationEngine.js';
+import { ViewMode } from '../types/index.js';
 
 export class SimulationControls {
-    constructor(container, engine) {
+    public container: HTMLElement;
+    public engine: SimulationEngine;
+    public currentViewMode: ViewMode = ViewMode.SPLIT;
+    public onViewModeChange: ((mode: ViewMode) => void) | null = null;
+
+    constructor(container: HTMLElement, engine: SimulationEngine) {
         this.container = container;
         this.engine = engine;
-        this.currentViewMode = 'SPLIT';
-        this.onViewModeChange = null;
-
         this.render();
         this.attachEvents();
     }
 
-    render() {
+    public render(): void {
         this.container.innerHTML = `
             <div class="sim-controls-panel">
                 <!-- View Mode Switcher: 2D / 3D Virtual Window / Split -->
@@ -49,7 +53,6 @@ export class SimulationControls {
                         </button>
                     </div>
 
-                    <!-- Speed Multipliers -->
                     <div class="speed-selector">
                         <span class="speed-label">RATE:</span>
                         <button class="speed-btn" data-speed="0.5">0.5x</button>
@@ -130,13 +133,14 @@ export class SimulationControls {
         `;
     }
 
-    attachEvents() {
+    private attachEvents(): void {
+        // View Mode Switcher
         const viewBtns = this.container.querySelectorAll('.viewmode-btn');
         viewBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 viewBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                const mode = btn.dataset.mode;
+                const mode = btn.getAttribute('data-mode') as ViewMode;
                 this.currentViewMode = mode;
                 if (this.onViewModeChange) {
                     this.onViewModeChange(mode);
@@ -144,9 +148,10 @@ export class SimulationControls {
             });
         });
 
-        const playBtn = this.container.querySelector('#btn-play-pause');
-        const playIcon = playBtn.querySelector('.btn-icon');
-        const playText = playBtn.querySelector('.btn-text');
+        // Playback
+        const playBtn = this.container.querySelector('#btn-play-pause')!;
+        const playIcon = playBtn.querySelector('.btn-icon')!;
+        const playText = playBtn.querySelector('.btn-text')!;
 
         playBtn.addEventListener('click', () => {
             if (this.engine.isRunning) {
@@ -162,7 +167,7 @@ export class SimulationControls {
             }
         });
 
-        this.container.querySelector('#btn-step').addEventListener('click', () => {
+        this.container.querySelector('#btn-step')!.addEventListener('click', () => {
             if (this.engine.isRunning) {
                 this.engine.pause();
                 playBtn.classList.remove('active');
@@ -172,7 +177,7 @@ export class SimulationControls {
             this.engine.step();
         });
 
-        this.container.querySelector('#btn-reset').addEventListener('click', () => {
+        this.container.querySelector('#btn-reset')!.addEventListener('click', () => {
             this.engine.reset();
             playBtn.classList.remove('active');
             playIcon.textContent = '▶';
@@ -184,22 +189,22 @@ export class SimulationControls {
             btn.addEventListener('click', () => {
                 speedBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                const speed = parseFloat(btn.dataset.speed);
+                const speed = parseFloat(btn.getAttribute('data-speed') || '1.0');
                 this.engine.setSpeed(speed);
             });
         });
 
-        this.container.querySelector('#toggle-cbba').addEventListener('change', (e) => {
+        this.container.querySelector('#toggle-cbba')!.addEventListener('change', (e: any) => {
             this.engine.enabledAlgorithms.cbba = e.target.checked;
             this.engine.emitLog('CONFIG', `CBBA Task Allocation algorithm: ${e.target.checked ? 'ENABLED' : 'DISABLED'}`);
         });
 
-        this.container.querySelector('#toggle-cbs').addEventListener('change', (e) => {
+        this.container.querySelector('#toggle-cbs')!.addEventListener('change', (e: any) => {
             this.engine.enabledAlgorithms.cbs = e.target.checked;
             this.engine.emitLog('CONFIG', `CBS Multi-Agent Path Planning algorithm: ${e.target.checked ? 'ENABLED' : 'DISABLED'}`);
         });
 
-        this.container.querySelector('#toggle-orca').addEventListener('change', (e) => {
+        this.container.querySelector('#toggle-orca')!.addEventListener('change', (e: any) => {
             this.engine.enabledAlgorithms.orca = e.target.checked;
             this.engine.emitLog('CONFIG', `ORCA Local Real-Time Evasion algorithm: ${e.target.checked ? 'ENABLED' : 'DISABLED'}`);
         });
@@ -209,34 +214,35 @@ export class SimulationControls {
         this.setupLayerToggle('#toggle-vectors', 'velocityVectors');
         this.setupLayerToggle('#toggle-sensor', 'sensorRadius');
 
-        this.container.querySelector('#evt-new-task').addEventListener('click', () => {
+        this.container.querySelector('#evt-new-task')!.addEventListener('click', () => {
             this.engine.injectNewTask();
         });
 
-        this.container.querySelector('#evt-robot-failure').addEventListener('click', () => {
+        this.container.querySelector('#evt-robot-failure')!.addEventListener('click', () => {
             this.engine.triggerRobotFailure('R3');
         });
 
-        this.container.querySelector('#evt-low-battery').addEventListener('click', () => {
+        this.container.querySelector('#evt-low-battery')!.addEventListener('click', () => {
             this.engine.triggerLowBattery('R2');
         });
 
-        this.container.querySelector('#evt-block-aisle').addEventListener('click', () => {
+        this.container.querySelector('#evt-block-aisle')!.addEventListener('click', () => {
             const coords = Math.random() > 0.5 ? { x: 14, y: 7 } : { x: 8, y: 8 };
             this.engine.blockAisle(coords.x, coords.y);
         });
 
-        this.container.querySelector('#evt-recover').addEventListener('click', () => {
+        this.container.querySelector('#evt-recover')!.addEventListener('click', () => {
             this.engine.recoverRobot('R3');
         });
 
-        this.container.querySelector('#evt-clear-obs').addEventListener('click', () => {
+        this.container.querySelector('#evt-clear-obs')!.addEventListener('click', () => {
             this.engine.clearObstacles();
         });
     }
 
-    setupLayerToggle(selector, layerKey) {
+    private setupLayerToggle(selector: string, layerKey: keyof typeof this.engine.layerToggles): void {
         const btn = this.container.querySelector(selector);
+        if (!btn) return;
         btn.addEventListener('click', () => {
             this.engine.layerToggles[layerKey] = !this.engine.layerToggles[layerKey];
             btn.classList.toggle('active', this.engine.layerToggles[layerKey]);

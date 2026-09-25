@@ -1,9 +1,13 @@
-// ROBOMESS - Zero-Dependency Local Static Server
-// Uses built-in Node.js modules (http, fs, path)
+// ROBOMESS - Zero-Dependency Local Static Server (ES Module)
+// Uses built-in Node.js modules (http, fs, path, url)
 
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
 const ROOT = path.resolve(__dirname);
@@ -12,6 +16,7 @@ const MIME_TYPES = {
     '.html': 'text/html; charset=utf-8',
     '.css': 'text/css; charset=utf-8',
     '.js': 'text/javascript; charset=utf-8',
+    '.ts': 'text/plain; charset=utf-8',
     '.json': 'application/json; charset=utf-8',
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
@@ -24,7 +29,6 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-    // Parse URL and sanitize path
     const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
     let reqPath = decodeURIComponent(parsedUrl.pathname);
     
@@ -35,7 +39,6 @@ const server = http.createServer((req, res) => {
     const safePath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '');
     const filePath = path.join(ROOT, safePath);
 
-    // Ensure within root
     if (!filePath.startsWith(ROOT)) {
         res.writeHead(403, { 'Content-Type': 'text/plain' });
         res.end('403 Forbidden');
